@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>HTTP POST - Yeni Makale Ekle</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            font-family: sans-serif;
+        }
+        .form-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            width: 400px;
+        }
+        h3 {
+            margin-top: 0;
+            color: #2d3436;
+            text-align: center;
+            margin-bottom: 20px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .input-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        label {
+            font-size: 14px;
+            color: #636e72;
+            font-weight: bold;
+        }
+        input, textarea {
+            padding: 12px;
+            border: 1px solid #dfe6e9;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            font-family: sans-serif;
+        }
+        input:focus, textarea:focus {
+            border-color: #6c5ce7;
+        }
+        textarea {
+            resize: vertical;
+            min-height: 100px;
+        }
+        button {
+            padding: 12px;
+            background-color: #6c5ce7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 16px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #5b4bc4;
+        }
+        button:disabled {
+            background-color: #b2bec3;
+            cursor: not-allowed;
+        }
+        .resultContainer {
+            margin-top: 20px;
+            padding: 15px;
+            border-radius: 6px;
+            display: none;
+            text-align: center;
+            font-weight: bold;
+        }
+        .success {
+            background-color: #e8f5e9;
+            color: #2e7d32;
+            border: 1px solid #c8e6c9;
+        }
+        .error {
+            background-color: #ffebee;
+            color: #c62828;
+            border: 1px solid #ffcdd2;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="form-card">
+        <h3>Yeni Makale Yayınla</h3>
+        
+        <div class="form-group">
+            <div class="input-wrapper">
+                <label for="postTitle">Makale Başlığı</label>
+                <input type="text" id="postTitle" placeholder="Başlık girin...">
+            </div>
+            
+            <div class="input-wrapper">
+                <label for="postBody">Makale İçeriği</label>
+                <textarea id="postBody" placeholder="İçerik yazın..."></textarea>
+            </div>
+            
+            <button id="submitBtn">Yayınla</button>
+            <button id="updateBtn">Güncelle</button>
+            <button id="deleteBtn">Sil</button>
+        </div>
+
+        <div class="resultContainer success" id="resultContainer"></div>
+        <div class="resultContainer error" id="errorMsg"></div>
+    </div>
+
+    <script>
+        // DOM Elementleri
+        const postTitle = document.getElementById('postTitle');
+        const postBody = document.getElementById('postBody');
+        const submitBtn = document.getElementById('submitBtn');
+        const updateBtn = document.getElementById('updateBtn');
+        const deleteBtn = document.getElementById('deleteBtn');
+        const resultContainer = document.getElementById('resultContainer');
+        const errorMsg = document.getElementById('errorMsg');
+
+        // ASENKRON POST MANTIĞINI BURAYA YAZACAKSIN
+        async function addBlog() {
+            if (postBody.value === "" || postTitle.value === "") {
+                showErrorMsg();
+                return;
+            }
+            submitBtn.textContent = "Yayınlanıyor..."
+            try {
+                const data = await request("https://jsonplaceholder.typicode.com/posts", "POST", {title: postTitle.value, body: postBody.value});
+                clearInputs()
+                showResultContainer("Makale Başarıyle Yüklendi!")
+            } catch (error) {
+                console.error(error);
+            } finally {
+                submitBtn.textContent = "Yayınla";
+                changeButtonDisabled();
+            }
+        }
+
+        async function updateBlog() {
+           if (postBody.value === "" || postTitle.value === "") {
+                showErrorMsg()
+                return;
+           }
+           updateBtn.textContent = "Güncelleniyor...";
+           try {
+                const data = await request("https://jsonplaceholder.typicode.com/posts/1", "PUT", { title: postTitle.value, body: postBody.value});
+                clearInputs()
+                showResultContainer("Makale Başarıyla Güncellendi!")
+           } catch (error) {
+                console.error(error);
+           } finally {
+                updateBtn.textContent = "Güncelle";
+                changeButtonDisabled();
+           }
+        }
+
+        async function deleteBlog() {
+            deleteBtn.textContent = "Siliniyor...";
+            try {
+                const data = await request("https://jsonplaceholder.typicode.com/posts/1", "DELETE");
+                clearInputs()
+                showResultContainer("Makale başarıyla silindi!")
+            } catch (error) {
+                console.error(error);
+            } finally {
+                deleteBtn.textContent = "Sil";
+                changeButtonDisabled();
+            }
+        }
+
+        function changeButtonDisabled() {
+            updateBtn.disabled = !updateBtn.disabled;
+            submitBtn.disabled = !submitBtn.disabled;
+            deleteBtn.disabled = !deleteBtn.disabled;
+        }
+
+        function hideResultAndErrorMessage() {
+            errorMsg.style.display = "none";
+            resultContainer.style.display = "none";
+        }
+
+        function showResultContainer(message) {
+            resultContainer.style.display = "block";
+            resultContainer.textContent = message;
+            errorMsg.style.display = "none"
+        }
+
+        function showErrorMsg() {
+            resultContainer.style.display = "none";
+            errorMsg.style.display = "block";
+            errorMsg.textContent = "Tüm alanları doldurunuz.";
+        }
+
+        function clearInputs() {
+            postBody.value = ""
+            postTitle.value = ""
+        }
+
+        submitBtn.addEventListener('click', () => {
+            addBlog()
+        })
+
+        updateBtn.addEventListener('click', () => {
+            updateBlog()
+        })
+
+        deleteBtn.addEventListener('click', () => {
+            deleteBlog()
+        })
+
+        async function request(url, method, bodyData = null) {
+            const options = {
+                method: method,
+                headers: {
+                    "Content-Type": "application/json"
+                },
+                body: bodyData ? JSON.stringify(bodyData) : null
+            }
+            hideResultAndErrorMessage();
+            changeButtonDisabled();
+            try {
+                const response = await fetch(url, options);
+
+                if(!response.ok) {
+                    throw new Error('API responded with: ' + response.status);
+                }
+                const data = await response.json();
+                console.log(data)
+                return data
+            } catch (error) {
+                console.error(`Network or connection error: ${error}`)
+            }
+        }
+
+    </script>
+</body>
+</html>
