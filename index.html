@@ -123,7 +123,7 @@
 </head>
 <body>
 
-    <div id="form-card"class="form-card">
+    <div id="form-card" class="form-card">
         <h3>Yeni Makale Yayınla</h3>
         
         <div class="form-group">
@@ -199,6 +199,7 @@
                 const data = await request(`http://127.0.0.1:8000/blog-guncelle?post_id=${id}`, "PUT", { title: postTitle.value, body: postBody.value});
                 clearInputs()
                 showResultContainer("Makale Başarıyla Güncellendi!")
+                
            } catch (error) {
                 console.error(error);
            } finally {
@@ -222,6 +223,7 @@
         }
 
         async function getBlogs() {
+            blogList.innerHTML = ""
             try {
                 const data = await request("http://127.0.0.1:8000/blog-tumugoruntule", "GET");
                 console.log(data)
@@ -287,16 +289,19 @@
             postTitle.value = ""
         }
 
-        cardDiv.addEventListener('click', (e) => {
+        cardDiv.addEventListener('click', async (e) => {
             const id = e.target.dataset.id
             if (e.target === submitBtn) {
-                addBlog()
+                await addBlog()
+                getBlogs()
             }
             if (e.target === updateBtn) {
-                updateBlog(id)
+                await updateBlog(id)
+                getBlogs()
             }
             if (e.target === deleteBtn) {
-                deleteBlog(id)
+                await deleteBlog(id)
+                getBlogs()
             }
         })
 
