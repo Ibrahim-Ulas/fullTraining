@@ -211,7 +211,7 @@
         async function deleteBlog(id) {
             deleteBtn.textContent = "Siliniyor...";
             try {
-                const data = await request(`http://127.0.0.1:8000/blog-sil?post_id=${id}`, "DELETE", {id: 10});
+                const data = await request(`http://127.0.0.1:8000/blog-sil?post_id=${id}`, "DELETE");
                 clearInputs();
                 showResultContainer("Makale başarıyla silindi!");
             } catch (error) {
@@ -307,7 +307,7 @@
 
         blogList.addEventListener('click', (e) => {
             if (e.target.classList.contains('view-btn')) {
-                const blogId = event.target.dataset.id
+                const blogId = e.target.dataset.id
                 getSingleBlog(blogId);
             }
         })

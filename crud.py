@@ -2,24 +2,25 @@ import aiosqlite
 
 async def create_blog_post(db: aiosqlite.Connection, title: str, body: str):
     cursor = await db.execute(
-        "INSERT INTO posts (title, body, id) VALUES (?, ?)",
+        "INSERT INTO posts (title, body) VALUES (?, ?)",
         (title, body)
     )
     await db.commit()
-    print(cursor.rowcount > 0)
     return cursor.rowcount > 0
 
 async def update_blog_post(db: aiosqlite.Connection, post_id: int, title:str, body: str):
-    await db.execute(
+    cursor = await db.execute(
         "UPDATE posts SET title = ?, body = ? WHERE id = ?", 
         (title, body, post_id)
     )
     await db.commit()
-
+    return cursor.rowcount > 0
 async def get_all_blog_posts(db: aiosqlite.Connection):
     posts = await db.execute("SELECT * FROM posts")
     rows = await posts.fetchall()
-    return [dict(row) for row in rows]
+    if rows:
+        return [dict(row) for row in rows]
+    return None
 
 async def get_single_blog_post(db: aiosqlite.Connection, post_id: int):
     post = await db.execute("SELECT * FROM posts WHERE id=?", (post_id,))
@@ -29,5 +30,8 @@ async def get_single_blog_post(db: aiosqlite.Connection, post_id: int):
     return dict(row)
 
 async def delete_blog_post(db:aiosqlite.Connection, post_id: int):
-    await db.execute("DELETE FROM posts where id=?", (post_id,))
+    response = await db.execute("DELETE FROM posts where id=?", (post_id,))
     await db.commit()
+    if response:
+        return True
+    return False
