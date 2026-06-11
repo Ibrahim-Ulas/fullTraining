@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Blogger - Giriş Yap & Kayıt Ol</title>
+    <style>
+        body {
+            margin: 0;
+            height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            background: linear-gradient(135deg, #6c5ce7, #a29bfe);
+            font-family: sans-serif;
+        }
+        .auth-card {
+            background: white;
+            padding: 30px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+            width: 360px;
+        }
+        h3 {
+            margin-top: 0;
+            color: #2d3436;
+            text-align: center;
+            margin-bottom: 25px;
+            font-size: 22px;
+        }
+        .form-group {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+        }
+        .input-wrapper {
+            display: flex;
+            flex-direction: column;
+            gap: 5px;
+        }
+        label {
+            font-size: 13px;
+            color: #636e72;
+            font-weight: bold;
+        }
+        input {
+            padding: 12px;
+            border: 1px solid #dfe6e9;
+            border-radius: 6px;
+            font-size: 14px;
+            outline: none;
+            font-family: sans-serif;
+            transition: border-color 0.2s;
+        }
+        input:focus {
+            border-color: #6c5ce7;
+        }
+        button {
+            padding: 12px;
+            background-color: #6c5ce7;
+            color: white;
+            border: none;
+            border-radius: 6px;
+            font-size: 15px;
+            cursor: pointer;
+            font-weight: bold;
+            transition: background 0.2s;
+            margin-top: 10px;
+        }
+        button:hover {
+            background-color: #5b4bc4;
+        }
+        button:disabled {
+            background-color: #b2bec3;
+            cursor: not-allowed;
+        }
+        .toggle-text {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 13px;
+            color: #636e72;
+        }
+        .toggle-text a {
+            color: #6c5ce7;
+            text-decoration: none;
+            font-weight: bold;
+            cursor: pointer;
+        }
+        .toggle-text a:hover {
+            text-decoration: underline;
+        }
+        /* Form Değişim Sihri */
+        .hidden {
+            display: none;
+        }
+        .message-box {
+            margin-top: 15px;
+            padding: 12px;
+            border-radius: 6px;
+            display: none;
+            text-align: center;
+            font-weight: bold;
+            font-size: 13px;
+        }
+        .success { background-color: #e8f5e9; color: #2e7d32; border: 1px solid #c8e6c9; }
+        .error { background-color: #ffebee; color: #c62828; border: 1px solid #ffcdd2; }
+    </style>
+</head>
+<body>
+
+    <div class="auth-card">
+        <div id="loginFormSection">
+            <h3>Hesabına Giriş Yap</h3>
+            <form id="loginForm" class="form-group">
+                <div class="input-wrapper">
+                    <label for="loginUsername">Kullanıcı Adı</label>
+                    <input type="text" id="loginUsername" placeholder="Kullanıcı adınızı girin..." required>
+                </div>
+                
+                <div class="input-wrapper">
+                    <label for="loginPassword">Şifre</label>
+                    <input type="password" id="loginPassword" placeholder="Şifrenizi girin..." required>
+                </div>
+                
+                <button type="submit" id="loginBtn">Giriş Yap</button>
+            </form>
+            <div class="toggle-text">
+                Henüz hesabın yok mu? <a id="toRegisterLink">Kayıt Ol</a>
+            </div>
+        </div>
+
+        <div id="registerFormSection" class="hidden">
+            <h3>Yeni Hesap Oluştur</h3>
+            <form id="registerForm" class="form-group">
+                <div class="input-wrapper">
+                    <label for="registerEmail">Email</label>
+                    <input type="text" id="registerEmail" placeholder="Geçerli bir email girin..." required>
+                </div>
+                
+                <div class="input-wrapper">
+                    <label for="registerPassword">Şifre</label>
+                    <input type="password" id="registerPassword" placeholder="Güçlü bir şifre belirleyin..." required>
+                </div>
+                
+                <button type="submit" id="registerBtn">Kayıt Ol</button>
+            </form>
+            <div class="toggle-text">
+                Zaten bir hesabın var mı? <a id="toLoginLink">Giriş Yap</a>
+            </div>
+        </div>
+
+        <div id="msgBox" class="message-box"></div>
+    </div>
+
+    <script type="module" src="./login.js"></script>
+</body>
+</html>
