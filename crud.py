@@ -1,11 +1,13 @@
 import aiosqlite
 
 async def create_blog_post(db: aiosqlite.Connection, title: str, body: str):
-    await db.execute(
-        "INSERT INTO posts (title, body) VALUES (?, ?)",
+    cursor = await db.execute(
+        "INSERT INTO posts (title, body, id) VALUES (?, ?)",
         (title, body)
     )
     await db.commit()
+    print(cursor.rowcount > 0)
+    return cursor.rowcount > 0
 
 async def update_blog_post(db: aiosqlite.Connection, post_id: int, title:str, body: str):
     await db.execute(

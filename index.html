@@ -327,7 +327,6 @@
                     throw new Error('API responded with: ' + response.status);
                 }
                 const data = await response.json();
-                console.log(data)
                 return data
             } catch (error) {
                 console.error(`Network or connection error: ${error}`)
