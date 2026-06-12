@@ -4,7 +4,6 @@ from database import get_db
 from crud.users import create_user, get_user, get_current_user
 from security import hash_password, match_password, generate_token
 from schemas import UserCreate
-import json
 
 router = APIRouter(
     prefix="/user-",
@@ -22,7 +21,9 @@ async def kullanici_olustur(credentials: UserCreate, db:aiosqlite.Connection=Dep
 
 @router.post("giris")
 async def giris_yap(credentials: UserCreate, response:Response, db:aiosqlite.Connection=Depends(get_db)):
-    user = await get_user(db, credentials.email)
+    user = await get_user(db, credentials.email);
+    if not user:
+        raise HTTPException(status_code= 404, detail="E-posta adresi bulunamadı")
     if not match_password(credentials.password, user.get('password')):
         raise HTTPException(status_code = 400, detail="E-posta veya şifre Hatalı")
     

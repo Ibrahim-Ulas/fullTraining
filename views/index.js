@@ -10,7 +10,7 @@ async function addBlog() {
     const submitBtn = document.getElementById('submitBtn');
 
     if (postBody.value === "" || postTitle.value === "") {
-        showErrorMsg();
+        showErrorMsg("Tüm alanları doldurunuz.");
         return;
     }
 
@@ -21,12 +21,13 @@ async function addBlog() {
     const data = await request("http://127.0.0.1:8000/blog-olustur", "POST", {title: postTitle.value, body: postBody.value});
     
     if (data.status !== "success") {
-        showErrorMsg();
+        showErrorMsg("Blog oluşturulamadı!");
         return;
     }
-
+    if (data) {
     clearInputs()
     showResultContainer("Makale Başarıyle Yüklendi!")
+    }
     submitBtn.textContent = "Yayınla";
     changeButtonDisabled(false);
 }
@@ -37,7 +38,7 @@ async function updateBlog(id) {
     const updateBtn = document.getElementById('updateBtn');
 
     if (postBody.value === "" || postTitle.value === "") {
-        showErrorMsg()
+        showErrorMsg("Tüm alanları doldurunuz.")
         return;
     }
 
@@ -47,7 +48,7 @@ async function updateBlog(id) {
 
     const data = await request(`http://127.0.0.1:8000/blog-guncelle?post_id=${id}`, "PUT", { title: postTitle.value, body: postBody.value});
     if (data.status !== "success") {
-        showErrorMsg();
+        showErrorMsg("Blog Güncellenemedi");
         return;
     }
     clearInputs()
@@ -57,13 +58,18 @@ async function updateBlog(id) {
 }
 
 async function deleteBlog(id) {
+    if(!id) {
+        showErrorMsg("Lütfen silinecek bir makale seçin!")
+    }
     const deleteBtn = document.getElementById('deleteBtn');
     deleteBtn.textContent = "Siliniyor...";
 
     const data = await request(`http://127.0.0.1:8000/blog-sil?post_id=${id}`, "DELETE");
 
+    if(data) {
     clearInputs();
     showResultContainer("Makale başarıyla silindi!");
+    }
     deleteBtn.textContent = "Sil";
     changeButtonDisabled(false);
 }
@@ -158,13 +164,13 @@ function showResultContainer(message) {
     errorMsg.style.display = "none"
 }
 
-function showErrorMsg() {
+function showErrorMsg(message) {
     const resultContainer = document.getElementById('resultContainer');
     const errorMsg = document.getElementById('errorMsg');
 
     resultContainer.style.display = "none";
     errorMsg.style.display = "block";
-    errorMsg.textContent = "Tüm alanları doldurunuz.";
+    errorMsg.textContent = message;
 }
 
 function clearInputs() {
