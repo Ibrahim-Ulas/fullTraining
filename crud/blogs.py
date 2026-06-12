@@ -1,9 +1,9 @@
 import aiosqlite
 
-async def create_blog_post(db: aiosqlite.Connection, title: str, body: str):
+async def create_blog_post(db: aiosqlite.Connection, user_id:int ,title: str, body: str):
     cursor = await db.execute(
-        "INSERT INTO posts (title, body) VALUES (?, ?)",
-        (title, body)
+        "INSERT INTO posts (title, body, user_id) VALUES (?, ?, ?)",
+        (title, body, user_id)
     )
     await db.commit()
     return cursor.rowcount > 0
@@ -15,15 +15,15 @@ async def update_blog_post(db: aiosqlite.Connection, post_id: int, title:str, bo
     )
     await db.commit()
     return cursor.rowcount > 0
-async def get_all_blog_posts(db: aiosqlite.Connection):
-    posts = await db.execute("SELECT * FROM posts")
+async def get_all_blog_posts(db: aiosqlite.Connection, user_id: int):
+    posts = await db.execute("SELECT * FROM posts WHERE user_id = ?", (user_id,))
     rows = await posts.fetchall()
     if rows:
         return [dict(row) for row in rows]
     return None
 
-async def get_single_blog_post(db: aiosqlite.Connection, post_id: int):
-    post = await db.execute("SELECT * FROM posts WHERE id=?", (post_id,))
+async def get_single_blog_post(db: aiosqlite.Connection, post_id: int , user_id: int):
+    post = await db.execute("SELECT * FROM posts WHERE id=? AND user_id = ?", (post_id, user_id))
     row = await post.fetchone()
     if row is None:
         return None

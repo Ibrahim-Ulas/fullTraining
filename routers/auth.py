@@ -1,7 +1,8 @@
-from fastapi import APIRouter, Depends
+from fastapi import APIRouter, Depends, HTTPException, Response
 import aiosqlite
 from database import get_db
-from crud.users import create_user, hash_password
+from crud.users import create_user, get_user, get_current_user
+from security import hash_password, match_password, generate_token
 from schemas import UserCreate
 import json
 
@@ -17,4 +18,37 @@ async def kullanici_olustur(credentials: UserCreate, db:aiosqlite.Connection=Dep
 
     if response:
         return {"status": "success", "message": "Kullanıcı başarıyla oluşturuldu"}
-    return {"status": "failed", "message": "Kullanıcı oluşturulamadı"}
+    raise HTTPException(status_code=400, detail="Kullanıcı oluşturulamadı")
+
+@router.post("giris")
+async def giris_yap(credentials: UserCreate, response:Response, db:aiosqlite.Connection=Depends(get_db)):
+    user = await get_user(db, credentials.email)
+    if not match_password(credentials.password, user.get('password')):
+        raise HTTPException(status_code = 400, detail="E-posta veya şifre Hatalı")
+    
+    token = generate_token(user.get('id'), credentials.email)
+
+    response.set_cookie(
+        key="access_token",
+        value=token,
+        httponly=True,
+        secure=True,
+        samesite="none",
+        max_age=3600
+    )
+
+    return {"status": "success", "message": "Başarıyla giriş yapıldı"}
+
+@router.post('cikis')
+async def cikis_yap(response: Response):
+    response.delete_cookie(
+        key="access_token",
+        httponly=True,
+        secure=True,
+        samesite="None"
+    )
+    return {"status": "success", "message": "Başarıyla çıkış yapıldı"}
+
+@router.get("check-auth")
+async def check_auth(current_user: dict = Depends(get_current_user)):
+    return {"status": "success"}

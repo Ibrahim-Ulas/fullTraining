@@ -4,16 +4,15 @@ export async function request(url, method, bodyData = null) {
         headers: {
             "Content-Type": "application/json"
         },
+        credentials: "include",
         body: bodyData ? JSON.stringify(bodyData) : null
     }
 
     try {
         const response = await fetch(url, options);
-
         if(!response.ok) {
             throw new Error('API responded with: ' + response.status);
         }
-
         return await response.json()
     } catch (error) {
         console.error(`Network or connection error: ${error}`)

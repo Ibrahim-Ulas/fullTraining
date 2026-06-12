@@ -1,7 +1,8 @@
 from fastapi import APIRouter, Depends
 import aiosqlite
 from database import get_db
-import crud.blogs as blogs
+from crud.blogs import get_all_blog_posts, get_single_blog_post, create_blog_post, update_blog_post, delete_blog_post
+from crud.users import get_current_user
 from schemas import PostCreate
 
 router = APIRouter(
@@ -10,36 +11,39 @@ router = APIRouter(
 )
 
 @router.get("tumugoruntule")
-async def blogları_goruntule(db:aiosqlite.Connection = Depends(get_db)):
-    posts = await blogs.get_all_blog_posts(db)
+async def blogları_goruntule(db:aiosqlite.Connection = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    current_user_id = current_user.get("user_id")
+    posts = await get_all_blog_posts(db, current_user_id)
     if posts:
         return posts
-    return None
+    return []
 
 @router.get("goruntule")
-async def blog_goruntule(post_id: int, db:aiosqlite.Connection = Depends(get_db)):
-    post = await blogs.get_single_blog_post(db, post_id)
+async def blog_goruntule(post_id: int, db:aiosqlite.Connection = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    current_user_id = current_user.get("user_id")
+    post = await get_single_blog_post(db, post_id, current_user_id)
     if post:
         return post
-    return None
+    return []
 
 @router.post("olustur")
-async def blog_olustur(blog: PostCreate ,db: aiosqlite.Connection = Depends(get_db)):
-    response = await blog.create_blog_post(db, blog.title, blog.body)
+async def blog_olustur(blog: PostCreate ,db: aiosqlite.Connection = Depends(get_db), current_user: dict = Depends(get_current_user)):
+    current_user_id = current_user.get("user_id")
+    response = await create_blog_post(db, current_user_id, blog.title, blog.body)
     if response:
         return {"status": "success", "message": "Blog başarıyla oluşturuldu"}
     return {"status": "failed", "message": "Blog oluşturulamadı"}
 
 @router.put("guncelle")
 async def blog_guncelle(post_id: int, blog: PostCreate, db: aiosqlite.Connection = Depends(get_db)):
-    response = await blog.update_blog_post(db, post_id, blog.title, blog.body)
+    response = await update_blog_post(db, post_id, blog.title, blog.body)
     if response:
         return {"status": "success", "message": "Blog başarıyla oluşturuldu"}
     return {"status": "failed", "message": "Blog oluşturulamadı"}
 
 @router.delete("sil")
 async def blog_sil(post_id: int, db: aiosqlite.Connection = Depends(get_db)):
-    response = await blogs.delete_blog_post(db, post_id)
+    response = await delete_blog_post(db, post_id)
     if response:
         return {"status": "success", "message": "Blog başarıyla oluşturuldu"}
     return {"status": "failed", "message": "Blog oluşturulamadı"}

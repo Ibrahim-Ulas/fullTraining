@@ -20,6 +20,11 @@ document.getElementById('toLoginLink').addEventListener('click', () => {
 document.getElementById('registerBtn').addEventListener('click', () => {
     createUser();
 })
+
+document.getElementById('loginBtn').addEventListener('click', (e) => {
+    e.preventDefault();
+    userLogin();
+})
 // Mesaj Gösterme Yardımcı Fonksiyonları
 function showMessage(text, type) {
     const msgBox = document.getElementById('msgBox');
@@ -40,9 +45,19 @@ async function createUser() {
 
     const response = await request("http://127.0.0.1:8000/user-olustur", "POST", {email: userEmail.value, password: userPassword.value})
 
-    if(!response.ok) {
-        throw new Error(`API responded with: ${response.status}`);
-    }
     hideMessage();
     showMessage("Kullanıcı başarıyla oluşturuldu!", "success");
+}
+
+async function userLogin() {
+    const userEmail = document.getElementById('loginEmail');
+    const userPassword = document.getElementById('loginPassword');
+
+    const response = await request("http://127.0.0.1:8000/user-giris", "POST", {email: userEmail.value, password: userPassword.value})
+
+    if (response.status === "success"){
+        window.location.href = "http://localhost:5173/";
+    }
+    hideMessage();
+    showMessage("Token alınamadı", "error");
 }

@@ -21,6 +21,11 @@
             box-shadow: 0 10px 20px rgba(0,0,0,0.15);
             width: 400px;
         }
+        h2{
+            margin-top: 20px;
+            text-align: center;
+            margin-bottom: 20px;
+        }
         h3 {
             margin-top: 0;
             color: #2d3436;
@@ -122,32 +127,35 @@
     </style>
 </head>
 <body>
+    <div id="app" style="display: none;">
+        <div id="form-card" class="form-card" >
+            <h3>Yeni Makale Yayınla</h3>
+            
+            <div class="form-group">
+                <div class="input-wrapper">
+                    <label for="postTitle">Makale Başlığı</label>
+                    <input type="text" id="postTitle" placeholder="Başlık girin...">
+                </div>
+                
+                <div class="input-wrapper">
+                    <label for="postBody">Makale İçeriği</label>
+                    <textarea id="postBody" placeholder="İçerik yazın..."></textarea>
+                </div>
+                
+                <button id="submitBtn" type="button">Yayınla</button>
+                <button id="updateBtn" type="button">Güncelle</button>
+                <button id="deleteBtn" type="button">Sil</button>
+                <button id="logout" type="button" style="background-color: red;">Çıkış Yap</button>
+            </div>
 
-    <div id="form-card" class="form-card">
-        <h3>Yeni Makale Yayınla</h3>
-        
-        <div class="form-group">
-            <div class="input-wrapper">
-                <label for="postTitle">Makale Başlığı</label>
-                <input type="text" id="postTitle" placeholder="Başlık girin...">
-            </div>
-            
-            <div class="input-wrapper">
-                <label for="postBody">Makale İçeriği</label>
-                <textarea id="postBody" placeholder="İçerik yazın..."></textarea>
-            </div>
-            
-            <button id="submitBtn" type="button">Yayınla</button>
-            <button id="updateBtn" type="button">Güncelle</button>
-            <button id="deleteBtn" type="button">Sil</button>
+            <div class="resultContainer success" id="resultContainer"></div>
+            <div class="resultContainer error" id="errorMsg"></div>
         </div>
 
-        <div class="resultContainer success" id="resultContainer"></div>
-        <div class="resultContainer error" id="errorMsg"></div>
-    </div>
-
-    <div id="blogDiv">
-        <ul id="blogList"></ul>
+        <div id="blogDiv">
+            <h2>Bloglarınız</h2>
+            <ul id="blogList"></ul>
+        </div>
     </div>
 
     <script type="module" src="./index.js"></script>

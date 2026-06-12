@@ -1,5 +1,5 @@
 import { request } from "./common.js"
-
+userCheckAuth();
 document.addEventListener('DOMContentLoaded', async () => {
     await getBlogs()
 })
@@ -19,6 +19,11 @@ async function addBlog() {
     submitBtn.textContent = "Yayınlanıyor..."
 
     const data = await request("http://127.0.0.1:8000/blog-olustur", "POST", {title: postTitle.value, body: postBody.value});
+    
+    if (data.status !== "success") {
+        showErrorMsg();
+        return;
+    }
 
     clearInputs()
     showResultContainer("Makale Başarıyle Yüklendi!")
@@ -41,7 +46,10 @@ async function updateBlog(id) {
     updateBtn.textContent = "Güncelleniyor...";
 
     const data = await request(`http://127.0.0.1:8000/blog-guncelle?post_id=${id}`, "PUT", { title: postTitle.value, body: postBody.value});
-
+    if (data.status !== "success") {
+        showErrorMsg();
+        return;
+    }
     clearInputs()
     showResultContainer("Makale Başarıyla Güncellendi!")
     updateBtn.textContent = "Güncelle";
@@ -62,11 +70,11 @@ async function deleteBlog(id) {
 
 async function getBlogs() {
     const blogList = document.getElementById('blogList');
+    const blogDiv = document.getElementById('blogDiv')
     if (blogList.innerHTML !== "") blogList.innerHTML = "";
    
 
     const data = await request("http://127.0.0.1:8000/blog-tumugoruntule", "GET");
-    console.log(data)
 
     for (const blog of data) {
         const listItem = document.createElement("li")
@@ -99,6 +107,28 @@ async function getSingleBlog(id) {
     updateBtn.dataset.id = id
     deleteBtn.dataset.id = id
     changeButtonDisabled(false)
+}
+
+async function userLogout() {
+    const response = await request("http://127.0.0.1:8000/user-cikis", "POST")
+    if(response.status === "success"){
+        window.location.href = "http://localhost:5173/login.html"
+    }
+}
+
+async function userCheckAuth() {
+    const app = document.getElementById("app")
+    try {
+        const response = await fetch("http://127.0.0.1:8000/user-check-auth", {method:"GET", credentials: "include"});
+
+        if(response.status === 401) {
+            window.location.href="http://localhost:5173/login.html"
+            return;
+        }
+        app.style.display = "block";
+    } catch (error) {
+        window.location.href = "http://localhost:5173/login.html"
+    }
 }
 
 function changeButtonDisabled(bool) {
@@ -165,5 +195,9 @@ document.getElementById('blogList').addEventListener('click', (e) => {
         const blogId = e.target.dataset.id
         getSingleBlog(blogId);
     }
+})
+
+document.getElementById('logout').addEventListener('click', async () => {
+    await userLogout();
 })
 
