@@ -1,10 +1,9 @@
-from fastapi import APIRouter, Depends, HTTPException, Response
+from fastapi import APIRouter, Depends, HTTPException, Response, status
 import aiosqlite
 from database import get_db
 from crud.users import create_user, get_user, get_current_user
 from security import hash_password, match_password, generate_token
-from schemas import UserCreate
-
+from schemas import UserCreate, EmailCheck
 router = APIRouter(
     prefix="/user-",
     tags=["user"]
@@ -51,4 +50,12 @@ async def cikis_yap(response: Response):
 
 @router.get("check-auth")
 async def check_auth(current_user: dict = Depends(get_current_user)):
+    return {"status": "success"}
+
+
+@router.post("e-posta-kontrol")
+async def e_posta_kontrol_et(userEmail: EmailCheck, db = Depends(get_db)):
+    user = await get_user(db, userEmail.email)
+    if user is not None:
+        raise HTTPException(status_code=status.HTTP_409_CONFLICT, detail="Email kayıtlı")
     return {"status": "success"}

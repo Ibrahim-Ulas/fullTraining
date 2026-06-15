@@ -17,7 +17,19 @@ export async function request(url, method, bodyData = null) {
         }
         return await response.json()
     } catch (error) {
-        console.error(`Network or connection error: ${error}`)
         throw error;
     }
+}
+
+export function showMessage(id, text, type) {
+    const msgBox = document.getElementById(id);
+    msgBox.style.display = 'block';
+    msgBox.textContent = text;
+    msgBox.className = `message-box ${type}`; 
+}
+
+export function hideMessage(id) {
+    const msgBox = document.getElementById(id);
+    msgBox.style.display = 'none';
+    msgBox.textContent = '';
 }

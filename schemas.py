@@ -7,3 +7,6 @@ class PostCreate(BaseModel):
 class UserCreate(BaseModel):
     email: str
     password: str
+
+class EmailCheck(BaseModel):
+    email: str

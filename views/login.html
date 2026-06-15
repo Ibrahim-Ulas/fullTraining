@@ -114,7 +114,7 @@
             <form id="loginForm" class="form-group">
                 <div class="input-wrapper">
                     <label for="loginEmail">E-posta</label>
-                    <input type="text" id="loginEmail" placeholder="E-postanızı girin..." required>
+                    <input type="email" id="loginEmail" placeholder="E-postanızı girin..." required>
                 </div>
                 
                 <div class="input-wrapper">
@@ -134,12 +134,17 @@
             <form id="registerForm" class="form-group">
                 <div class="input-wrapper">
                     <label for="registerEmail">Email</label>
-                    <input type="text" id="registerEmail" placeholder="Geçerli bir email girin..." required>
+                    <input type="email" id="registerEmail" placeholder="Geçerli bir email girin..." required>
                 </div>
                 
                 <div class="input-wrapper">
                     <label for="registerPassword">Şifre</label>
                     <input type="password" id="registerPassword" placeholder="Güçlü bir şifre belirleyin..." required>
+                </div>
+
+                 <div class="input-wrapper">
+                    <label for="registerPasswordConfirm">Şifre Tekrar</label>
+                    <input type="password" id="registerPasswordConfirm" placeholder="Şifrenizi tekrar girin..." required>
                 </div>
                 
                 <button type="submit" id="registerBtn">Kayıt Ol</button>
