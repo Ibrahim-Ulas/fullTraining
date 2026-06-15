@@ -22,6 +22,7 @@ document.getElementById('registerBtn').addEventListener('click', () => {
 })
 
 document.getElementById('loginBtn').addEventListener('click', (e) => {
+    e.preventDefault();
     userLogin();
 })
 // Mesaj Gösterme Yardımcı Fonksiyonları
@@ -51,13 +52,11 @@ async function createUser() {
 async function userLogin() {
     const userEmail = document.getElementById('loginEmail');
     const userPassword = document.getElementById('loginPassword');
-
+    try {
     const response = await request("http://127.0.0.1:8000/user-giris", "POST", {email: userEmail.value, password: userPassword.value})
-    console.log(response)
-    if (response.status === "success"){
-        window.location.href = "http://localhost:5173/";
-    } else {
+    window.location.href = "http://localhost:5173/"
+    } catch (error) {
         hideMessage();
-        showMessage("Token alınamadı", "error");
+        showMessage(error.message || "E-posta veya şifre bilgisi yanlış", "error");
     }
 }

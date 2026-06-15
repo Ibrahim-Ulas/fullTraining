@@ -2,7 +2,7 @@ import bcrypt
 import jwt
 from datetime import datetime, timedelta, timezone
 
-SECRET_KEY = "my_secret_key"
+SECRET_KEY = "my_super_duper_very_too_much_secret_key_that_i_dont_push_to_git"
 ALGORITHM = "HS256"
 
 def hash_password(password: str):

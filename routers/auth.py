@@ -22,10 +22,8 @@ async def kullanici_olustur(credentials: UserCreate, db:aiosqlite.Connection=Dep
 @router.post("giris")
 async def giris_yap(credentials: UserCreate, response:Response, db:aiosqlite.Connection=Depends(get_db)):
     user = await get_user(db, credentials.email);
-    if not user:
-        raise HTTPException(status_code= 404, detail="E-posta adresi bulunamadı")
-    if not match_password(credentials.password, user.get('password')):
-        raise HTTPException(status_code = 400, detail="E-posta veya şifre Hatalı")
+    if not user or not match_password(credentials.password, user.get('password')):
+        raise HTTPException(status_code = 400, detail="E-posta veya şifre hatalı")
     
     token = generate_token(user.get('id'), credentials.email)
 
@@ -39,6 +37,7 @@ async def giris_yap(credentials: UserCreate, response:Response, db:aiosqlite.Con
     )
 
     return {"status": "success", "message": "Başarıyla giriş yapıldı"}
+    
 
 @router.post('cikis')
 async def cikis_yap(response: Response):

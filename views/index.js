@@ -60,6 +60,7 @@ async function updateBlog(id) {
 async function deleteBlog(id) {
     if(!id) {
         showErrorMsg("Lütfen silinecek bir makale seçin!")
+        return;
     }
     const deleteBtn = document.getElementById('deleteBtn');
     deleteBtn.textContent = "Siliniyor...";
@@ -117,6 +118,7 @@ async function getSingleBlog(id) {
 
 async function userLogout() {
     const response = await request("http://127.0.0.1:8000/user-cikis", "POST")
+    console.log(response)
     if(response.status === "success"){
         window.location.href = "http://localhost:5173/login.html"
     }
@@ -124,17 +126,13 @@ async function userLogout() {
 
 async function userCheckAuth() {
     const app = document.getElementById("app")
-    try {
-        const response = await fetch("http://127.0.0.1:8000/user-check-auth", {method:"GET", credentials: "include"});
+    const response = await fetch("http://127.0.0.1:8000/user-check-auth", {method:"GET", credentials: "include"});
 
-        if(response.status === 401) {
-            window.location.href="http://localhost:5173/login.html"
-            return;
-        }
-        app.style.display = "block";
-    } catch (error) {
-        window.location.href = "http://localhost:5173/login.html"
+    if(response.status === 401) {
+        window.location.href="http://localhost:5173/login.html"
+        return;
     }
+    app.style.display = "block";
 }
 
 function changeButtonDisabled(bool) {
@@ -182,24 +180,30 @@ function clearInputs() {
 }
 
 document.getElementById('submitBtn').addEventListener('click', async () => {
-    await addBlog()
-    getBlogs()
+    await addBlog();
+    getBlogs();
 })
 
 document.getElementById('updateBtn').addEventListener('click', async (e) => {
-    await updateBlog(e.target.dataset.id)
-    getBlogs()
+    const deleteBtn = document.getElementById('deleteBtn')
+    await updateBlog(e.target.dataset.id);
+    e.target.removeAttribute("data-id")
+    deleteBtn.removeAttribute("data-id")
+    getBlogs();
 })
 
 document.getElementById('deleteBtn').addEventListener('click', async (e) => {
-    await deleteBlog(e.target.dataset.id)
-    getBlogs()
+    const updateBtn = document.getElementById('updateBtn')
+    await deleteBlog(e.target.dataset.id);
+    e.target.removeAttribute("data-id")
+    updateBtn.removeAttribute("data-id")
+    getBlogs();
 })
 
 document.getElementById('blogList').addEventListener('click', (e) => {
     if (e.target.classList.contains('view-btn')) {
-        const blogId = e.target.dataset.id
-        getSingleBlog(blogId);
+        const blogId = e.target.dataset.id;
+        getSingleBlog(blogId);;
     }
 })
 

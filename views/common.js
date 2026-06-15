@@ -10,11 +10,14 @@ export async function request(url, method, bodyData = null) {
 
     try {
         const response = await fetch(url, options);
+
         if(!response.ok) {
-            throw new Error('API responded with: ' + response.status);
+            const errorData = await response.json();
+            throw new Error(errorData.detail || "Bir hata oluştu");
         }
         return await response.json()
     } catch (error) {
         console.error(`Network or connection error: ${error}`)
+        throw error;
     }
 }

@@ -13,7 +13,7 @@ async def get_user(db:aiosqlite.Connection, email: str):
     cursor = await db.execute("SELECT id, email, password FROM users WHERE email=?", (email,))
     row = await cursor.fetchone()
     if not row:
-        raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Kullanıcı bulunamadı")
+        raise HTTPException(status_code=status.HTTP_400_BAD_REQUEST, detail="E-posta veya şifre hatalı")
     return dict(row)
 
 async def get_current_user(access_token: str = Cookie(None)):
